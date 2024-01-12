@@ -12,7 +12,7 @@ def get_cloze_data(cloze_filename):
     prev_words = list()
     next_words = list()
     with open(cloze_filename, 'r', encoding='utf-8') as cloze_file:
-        cloze = cloze_file.read().strip(',').lower().split()
+        cloze = cloze_file.read().strip(',').lower().split()  # Removing commas to get the word itself.
         n = len(cloze)
         for i, word in enumerate(cloze):
             if '__' in word:
@@ -86,7 +86,7 @@ def calculate_adapted_probabilities(probabilities):
     adapted_probabilities = defaultdict(list)
     for candidate in probabilities.keys():
         prob_sum = sum(probabilities[candidate])
-        if (prob_sum != 0):
+        if (prob_sum != 0):  # to avoid dividing by 0
             adapted_probabilities[candidate] = [i / prob_sum for i in probabilities[candidate]]
         else:
             adapted_probabilities[candidate] = [0 for i in probabilities[candidate]]
@@ -94,28 +94,28 @@ def calculate_adapted_probabilities(probabilities):
 def predict_best_combination(probabilities):
     n = len(probabilities.keys())
     final = [None] * n
-    filled_pos = list()
+    taken_positions = list()
     adapted_probabilities = calculate_adapted_probabilities(probabilities)
     #  Uncomment to create a file with the adapted probabilities, to see them.
     #save_probablities(adapted_probabilities,'proportionate_probabilities.json')
     for _ in range(n):
         max_prob = float('-inf')
         for candidate in adapted_probabilities.keys():
-            curr_max = max(adapted_probabilities[candidate])
-            if (curr_max > max_prob):
+            curr_max = max(adapted_probabilities[candidate])  # Get the maximum probability of the candidate
+            if (curr_max > max_prob):  # We search for max probability from all candidates, and insert it first in the position it had that probability
                 max_prob = curr_max
                 candidate_max = candidate
                 pos_max = adapted_probabilities[candidate].index(curr_max)
-        adapted_probabilities.pop(candidate_max, None)
+        adapted_probabilities.pop(candidate_max, None)  # Removing the word chosen from the probabilities dict so it will only be chosen once.
         for candidate in adapted_probabilities.keys():
-            adapted_probabilities[candidate].pop(pos_max)
-        for i in filled_pos:
+            adapted_probabilities[candidate].pop(pos_max)  # Removing all the taken position probabilities from the other words.
+        for i in taken_positions:
             if(pos_max>=i):
-                pos_max+=1
-        filled_pos.append(pos_max)
-        filled_pos.sort()
+                pos_max+=1  # Since we remove words already added to the list, we need to add to the index the revalent number
+        taken_positions.append(pos_max)
+        taken_positions.sort()
         final[pos_max] = candidate_max
-        adapted_probabilities = calculate_adapted_probabilities(adapted_probabilities)
+        adapted_probabilities = calculate_adapted_probabilities(adapted_probabilities)  # After removing the taked positions we have to recalculate the probabilities for each word left.
     return final
 
 
