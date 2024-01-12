@@ -45,8 +45,8 @@ def get_data_from_the_corpus(corpus, candidates):
                     words_dict['.'] += 1
                 else:
                     previous = stripped_word
-            if i % 100000 == 0:
-                print(i)
+            # Uncomment to print progress:
+            #if i % 100000 == 0:    print(i)
         return words_dict
 
 #  calculates the probabilities of each candidate to each position, using the words_freq which contains relevant words and words pairs frequaecies
@@ -75,7 +75,8 @@ def solve_cloze(input, candidates, lexicon, corpus):
     lst = predict_best_combination(probabilities)
 
     t2 = time()
-    print("time took: ", (t2 - t1) / 60, "minutes")
+    # Uncomment to print time took:
+    #print("time took: ", (t2 - t1) / 60, "minutes")
 
     return lst  # return your solution
 
