@@ -70,7 +70,8 @@ def solve_cloze(input, candidates, lexicon, corpus):
     candidate_list = get_candidates(candidates)
     words_freq = get_data_from_the_corpus(corpus,prev_words+next_words+candidate_list)
     probabilities = calculate_probabilities(words_freq, candidate_list, prev_words,next_words)
-    save_probablities(probabilities,"probabilities.json")
+    #  Uncomment to create a file with the probabilities, to see them.
+    #save_probabilities(probabilities, "probabilities.json")
 
     lst = predict_best_combination(probabilities)
 
@@ -80,23 +81,23 @@ def solve_cloze(input, candidates, lexicon, corpus):
 
     return lst  # return your solution
 
-
-
-
-
-
+# makes probabilities proportional to their other probabilities, ex: [0,0.1,0.3] -> [0,0.25,0.75]
+def calculate_adapted_probabilities(probabilities):
+    adapted_probabilities = defaultdict(list)
+    for candidate in probabilities.keys():
+        prob_sum = sum(probabilities[candidate])
+        if (prob_sum != 0):
+            adapted_probabilities[candidate] = [i / prob_sum for i in probabilities[candidate]]
+        else:
+            adapted_probabilities[candidate] = [0 for i in probabilities[candidate]]
+    return adapted_probabilities
 def predict_best_combination(probabilities):
     n = len(probabilities.keys())
     final = [None] * n
     filled_pos = list()
-    adapted_probabilities = defaultdict(list)
-    for candidate in probabilities.keys():
-        prob_sum = sum(probabilities[candidate])
-        if(prob_sum!=0):
-            adapted_probabilities[candidate] = [i / prob_sum for i in probabilities[candidate]]
-        else:
-            adapted_probabilities[candidate] = [0 for i in probabilities[candidate]]
-    save_probablities(adapted_probabilities,'proportionate_probabilities.json')
+    adapted_probabilities = calculate_adapted_probabilities(probabilities)
+    #  Uncomment to create a file with the adapted probabilities, to see them.
+    #save_probablities(adapted_probabilities,'proportionate_probabilities.json')
     for _ in range(n):
         max_prob = float('-inf')
         for candidate in adapted_probabilities.keys():
@@ -114,12 +115,13 @@ def predict_best_combination(probabilities):
         filled_pos.append(pos_max)
         filled_pos.sort()
         final[pos_max] = candidate_max
+        adapted_probabilities = calculate_adapted_probabilities(adapted_probabilities)
     return final
 
 
-def save_probablities(probablities,filename):
+def save_probabilities(probabilities, filename):
     with open(filename, "w") as outfile:
-        outfile.write(json.dumps(probablities, indent=2))
+        outfile.write(json.dumps(probabilities, indent=2))
 
 
 if __name__ == '__main__':
