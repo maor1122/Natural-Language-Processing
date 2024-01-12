@@ -1,11 +1,25 @@
 from collections import defaultdict
 import json
 from time import time
+from random import shuffle
 
 # Gets the candidates as a list from the file
 def get_candidates(candidates_file):
     with open(candidates_file, 'r', encoding='utf-8') as fin:
         return fin.read().split()
+
+# Calculate the chance accuracy by rolling 100 times.
+def calculate_and_print_chance_accuracy(candidates):
+    n = len(candidates)
+    shuffled_candidates = candidates.copy()
+    total_matching = 0
+    for i in range(100):
+        shuffle(shuffled_candidates)  # Shuffle the candidates order 100 times and count matching words orders
+        for solution, guess in zip(candidates, shuffled_candidates):
+            if solution == guess:
+                total_matching += 1
+    average_accuracy = total_matching / (len(candidates) * 100)  # Divide by 100 for the average and number of candidates for the percentage.
+    print('Estimated chance accuracy: ',average_accuracy)
 
 # for each missing word in the cloze gets the previous and next word.
 def get_cloze_data(cloze_filename):
@@ -66,8 +80,9 @@ def solve_cloze(input, candidates, lexicon, corpus):
     # todo: implement this function
     t1 = time()
     print(f'starting to solve the cloze {input} with {candidates} using {lexicon} and {corpus}')
-    prev_words, next_words = get_cloze_data(input)
     candidate_list = get_candidates(candidates)
+    calculate_and_print_chance_accuracy(candidate_list)
+    prev_words, next_words = get_cloze_data(input)
     words_freq = get_data_from_the_corpus(corpus,prev_words+next_words+candidate_list)
     probabilities = calculate_probabilities(words_freq, candidate_list, prev_words,next_words)
     #  Uncomment to create a file with the probabilities, to see them.
