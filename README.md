@@ -57,11 +57,11 @@ True ↓
 </code><br>
 
 prediction accuracy for each class (/rating)
-1 rating: 61%
+<code>1 rating: 61%
 2 rating: 48%
 3 rating: 47%
 4 rating: 51%
 5 rating: 71%
-average accuracy for exact rating: 56%
+average accuracy for exact rating: 56%</code>
 
 I mainly used python, sklearn and numpy for this project.<br>
