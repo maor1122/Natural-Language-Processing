@@ -9,6 +9,7 @@ for example for this paragraph:
 floods three __________ in thirty years, and was replaced with a steel suspension
 __________ in 1851. This was replaced by a __________ bridge in 1952. The city was
 linked up to the Swiss Central Railway in 1856.</code><br>
-this should be the output output:
+This should be the output:
 <br><code>\[‘times’, ‘bridge’, ‘concrete’\]</code><br>
 The simple solution we used to this problem is using an improved bigram language model by learning from a large lexicon and then checking for each word, but instead of checking only the previous word we check the next word aswell.
+
